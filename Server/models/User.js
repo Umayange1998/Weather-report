@@ -9,9 +9,12 @@
         type: String,
         required: true,
     },
-    weather_data:  {
-        type: String,
-        required: true,
+    weather_data: {
+        type: [{
+            date: { type: String, required: true },  // Store date
+            data: { type: Object, required: true }   // Store weather data object
+        }],
+        default: [],
     },
  });
 

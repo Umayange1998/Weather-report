@@ -15,7 +15,7 @@ mongoose.connect("mongodb+srv://wgikumayange:Password12345@weatherreportdata.kum
 
 const usersRouter = require('./routes/user');
 
-app.use("/users", usersRouter);
+app.use("/user", usersRouter);
 
 app.listen(3001,()=>{
     console.log("Server is running on port 3001")
