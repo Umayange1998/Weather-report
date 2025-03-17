@@ -11,8 +11,9 @@
     },
     weather_data: {
         type: [{
-            date: { type: String, required: true },  // Store date
-            data: { type: Object, required: true }   // Store weather data object
+            date: { type: String, required: true }, 
+            data: { type: Object, required: true },
+            //{Report:{type: String, required: true}   }
         }],
         default: [],
     },

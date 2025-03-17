@@ -2,7 +2,21 @@ const express = require("express");
 const router = express.Router();
 const UserModel = require("../models/User");
 const axios = require('axios');
+const cron = require('node-cron');
+const { OpenAI } = require('openai');
+require('dotenv').config();
+const openai = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY,
+});
 
+
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: process.env.GMAIL_USER,  // Use your Gmail address here
+        pass: process.env.GMAIL_PASS   // Use your Gmail password here (or app-specific password if 2FA is enabled)
+    }
+});
 // initiate a user
 router.post("/", async (req, res) => {
   try {
@@ -48,22 +62,57 @@ const updateUserWeatherData = async (user, location) => {
   
       // Get today's date in YYYY-MM-DD format
       const today = new Date().toISOString().split('T')[0];
-  
+
+
+//   const Report = await generateWeatherText(weatherData)
+
       // Update the user's weather data
-      user.weather_data.push({ date: today, data: weatherData });
+      user.weather_data.push({ date: today, data: weatherData, 
+//report: Report
+ });
+
+ 
+ await sendEmail(user.userName, weatherData);
+
       await user.save();
   
-      // Optionally send the weather report to the user via email
-    //   await sendEmail(user.email, `Weather update for ${location}: ${JSON.stringify(weatherData)}`);
-    } catch (error) {
+        } catch (error) {
       console.error("Error updating weather data:", error);
-      throw error;  // Propagate error so the calling function can handle it
+      throw error;  
     }
   };
+
+//   const generateWeatherText = async (weatherData) => {
+//     const prompt = `Generate a weather report based on the following data: ${JSON.stringify(weatherData)}`;
+//     const response = await openai.completions.create({
+//         model:'gpt-3.5-turbo',
+//         prompt: prompt,
+//         max_tokens: 150,
+//     });
+
+//     return response.choices[0].text.trim();
+// };
 // fetch weather data from OpenWeatherMap API
 const fetchWeather = async (location) => {
     const url = `https://api.openweathermap.org/data/2.5/weather?q=${location}&appid=ced8c8ae9bd6fc83d048a8968966abdf`;
     const response = await axios.get(url);
     return response.data;
+};
+
+// Function to send email to users
+const sendEmail = async (userName, weatherData) => {
+    const mailOptions = {
+        from: process.env.GMAIL_USER,  // Sender's email
+        to: userName,  // Receiver's email (email as username)
+        subject: "Hourly Weather Report",
+        text: JSON.stringify(weatherData, null, 2),  // Send raw weather data in a readable format
+    };
+
+    try {
+        await transporter.sendMail(mailOptions);
+        console.log(`Weather report sent to ${userName}`);
+    } catch (error) {
+        console.error("Error sending email:", error);
+    }
 };
 module.exports = router;
