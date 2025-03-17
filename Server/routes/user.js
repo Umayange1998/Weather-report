@@ -16,8 +16,8 @@ const openai = new OpenAI({
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-        user: process.env.GMAIL_USER,  // Use your Gmail address here
-        pass: process.env.GMAIL_PASS   // Use your Gmail password here (or app-specific password if 2FA is enabled)
+        user: process.env.GMAIL_USER,  // update email address in .env file
+        pass: process.env.GMAIL_PASS   // update  app-specific email password in .env file
     }
 });
 // initiate a user
