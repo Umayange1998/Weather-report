@@ -4,7 +4,10 @@ const UserModel = require("../models/User");
 const axios = require('axios');
 const cron = require('node-cron');
 const { OpenAI } = require('openai');
+const nodemailer = require('nodemailer');
 require('dotenv').config();
+
+
 const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
 });
